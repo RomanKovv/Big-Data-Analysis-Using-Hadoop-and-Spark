@@ -1,0 +1,968 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "971a4310-95a9-4cfe-a989-8326912efa07",
+   "metadata": {},
+   "source": [
+    "# Question 4: Pyspark Notebook"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b0e0c19b-0d28-446b-ac38-92716f6bd3c8",
+   "metadata": {},
+   "source": [
+    "We have successfully launched a notebook to work with our data. First let's start the Spark application."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "e5c2462c-0d55-4286-a144-b3612f8e8884",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:44:18.047046Z",
+     "iopub.status.busy": "2023-03-28T00:44:18.046633Z",
+     "iopub.status.idle": "2023-03-28T00:44:18.264367Z",
+     "shell.execute_reply": "2023-03-28T00:44:18.262621Z",
+     "shell.execute_reply.started": "2023-03-28T00:44:18.047001Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "b89fe7adf7bc467c8a38dbcef4784440",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<pyspark.sql.session.SparkSession object at 0x7fd1e46dc590>"
+     ]
+    }
+   ],
+   "source": [
+    "spark"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc693a60-f59a-48f2-b42e-d97f913f772c",
+   "metadata": {},
+   "source": [
+    "Now, let's install the data packages that we will require."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "50b49fc4-5d84-4843-85fd-c7cd2b5adb08",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:44:39.310632Z",
+     "iopub.status.busy": "2023-03-28T00:44:39.310198Z",
+     "iopub.status.idle": "2023-03-28T00:44:59.067861Z",
+     "shell.execute_reply": "2023-03-28T00:44:59.065220Z",
+     "shell.execute_reply.started": "2023-03-28T00:44:39.310596Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "a2d7d9378aa8419fa0b540b063bee680",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting pandas==0.25.1\n",
+      "  Using cached https://files.pythonhosted.org/packages/7e/ab/ea76361f9d3e732e114adcd801d2820d5319c23d0ac5482fa3b412db217e/pandas-0.25.1-cp37-cp37m-manylinux1_x86_64.whl\n",
+      "Requirement already satisfied: numpy>=1.13.3 in /usr/local/lib64/python3.7/site-packages (from pandas==0.25.1)\n",
+      "Collecting python-dateutil>=2.6.1 (from pandas==0.25.1)\n",
+      "  Using cached https://files.pythonhosted.org/packages/36/7a/87837f39d0296e723bb9b62bbb257d0355c7f6128853c78955f57342a56d/python_dateutil-2.8.2-py2.py3-none-any.whl\n",
+      "Requirement already satisfied: pytz>=2017.2 in /usr/local/lib/python3.7/site-packages (from pandas==0.25.1)\n",
+      "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.7/site-packages (from python-dateutil>=2.6.1->pandas==0.25.1)\n",
+      "Installing collected packages: python-dateutil, pandas\n",
+      "Successfully installed pandas-0.25.1 python-dateutil-2.8.2\n",
+      "\n",
+      "Collecting matplotlib==3.1.1\n",
+      "  Using cached https://files.pythonhosted.org/packages/19/7a/60bd79c5d79559150f8bba866dd7d434f0a170312e4d15e8aefa5faba294/matplotlib-3.1.1-cp37-cp37m-manylinux1_x86_64.whl\n",
+      "Collecting pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.1 (from matplotlib==3.1.1)\n",
+      "  Using cached https://files.pythonhosted.org/packages/6c/10/a7d0fa5baea8fe7b50f448ab742f26f52b80bfca85ac2be9d35cdd9a3246/pyparsing-3.0.9-py3-none-any.whl\n",
+      "Requirement already satisfied: python-dateutil>=2.1 in /mnt/tmp/1679964240468-0/lib/python3.7/site-packages (from matplotlib==3.1.1)\n",
+      "Requirement already satisfied: numpy>=1.11 in /usr/local/lib64/python3.7/site-packages (from matplotlib==3.1.1)\n",
+      "Collecting cycler>=0.10 (from matplotlib==3.1.1)\n",
+      "  Using cached https://files.pythonhosted.org/packages/5c/f9/695d6bedebd747e5eb0fe8fad57b72fdf25411273a39791cde838d5a8f51/cycler-0.11.0-py3-none-any.whl\n",
+      "Collecting kiwisolver>=1.0.1 (from matplotlib==3.1.1)\n",
+      "  Using cached https://files.pythonhosted.org/packages/ab/8f/8dbe2d4efc4c0b08ec67d6efb7cc31fbfd688c80afad85f65980633b0d37/kiwisolver-1.4.4-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl\n",
+      "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.7/site-packages (from python-dateutil>=2.1->matplotlib==3.1.1)\n",
+      "Collecting typing-extensions; python_version < \"3.8\" (from kiwisolver>=1.0.1->matplotlib==3.1.1)\n",
+      "  Using cached https://files.pythonhosted.org/packages/31/25/5abcd82372d3d4a3932e1fa8c3dbf9efac10cc7c0d16e78467460571b404/typing_extensions-4.5.0-py3-none-any.whl\n",
+      "Installing collected packages: pyparsing, cycler, typing-extensions, kiwisolver, matplotlib\n",
+      "Successfully installed cycler-0.11.0 kiwisolver-1.4.4 matplotlib-3.1.1 pyparsing-3.0.9 typing-extensions-4.5.0\n",
+      "\n",
+      "You are using pip version 9.0.1, however version 23.0.1 is available.\n",
+      "You should consider upgrading via the 'pip install --upgrade pip' command.\n",
+      "\n",
+      "You are using pip version 9.0.1, however version 23.0.1 is available.\n",
+      "You should consider upgrading via the 'pip install --upgrade pip' command."
+     ]
+    }
+   ],
+   "source": [
+    "# install data science & plotting packages\n",
+    "\n",
+    "sc.install_pypi_package(\"pandas==0.25.1\") \n",
+    "sc.install_pypi_package(\"matplotlib==3.1.1\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "43ae3242-3e76-4244-886e-6108084a7757",
+   "metadata": {},
+   "source": [
+    "We can now import the packages"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "d8e172a2-02c0-46f1-818d-c2a6b5cfc079",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:45:08.759479Z",
+     "iopub.status.busy": "2023-03-28T00:45:08.759142Z",
+     "iopub.status.idle": "2023-03-28T00:45:09.666010Z",
+     "shell.execute_reply": "2023-03-28T00:45:09.665023Z",
+     "shell.execute_reply.started": "2023-03-28T00:45:08.759447Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "71d32f7764714b39b88eb68ab2075dbf",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# importing packages\n",
+    "\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d0c55d38-c89e-4ff9-a7a4-bca0c1409b8a",
+   "metadata": {},
+   "source": [
+    "Let's import our CSV"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "faefe2f6-bd6b-434f-ab30-680cbefd8cbb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:45:16.907698Z",
+     "iopub.status.busy": "2023-03-28T00:45:16.907368Z",
+     "iopub.status.idle": "2023-03-28T00:45:17.890249Z",
+     "shell.execute_reply": "2023-03-28T00:45:17.888556Z",
+     "shell.execute_reply.started": "2023-03-28T00:45:16.907669Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "cd4b80676352451b83cddcec9db2cdc4",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "#importing DataFrame\n",
+    "data = spark.read.csv('s3://brainstation-dsft/eng_1M_1gram.csv', header=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a526a97e-3c68-480c-8781-43ed07e1998d",
+   "metadata": {},
+   "source": [
+    "## Examining the Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "71dd2ca8-6397-4581-83df-404655865bf0",
+   "metadata": {},
+   "source": [
+    "Now that we've successfull imported the data, let's examine the first few rows with the `take` function"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "0a670390-ee3f-4fb5-a625-9c98c46b6ebd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:45:20.266412Z",
+     "iopub.status.busy": "2023-03-28T00:45:20.266072Z",
+     "iopub.status.idle": "2023-03-28T00:45:21.169652Z",
+     "shell.execute_reply": "2023-03-28T00:45:21.168114Z",
+     "shell.execute_reply.started": "2023-03-28T00:45:20.266381Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "f7cf3cd1c32e4945b884c94c69bf2a26",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Row(token='inGermany', year='1927', frequency='2', pages='2', books='2'), Row(token='inGermany', year='1929', frequency='1', pages='1', books='1'), Row(token='inGermany', year='1930', frequency='1', pages='1', books='1'), Row(token='inGermany', year='1933', frequency='1', pages='1', books='1'), Row(token='inGermany', year='1934', frequency='1', pages='1', books='1')]"
+     ]
+    }
+   ],
+   "source": [
+    "#checking first few rows of DataFrame\n",
+    "data.take(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5b4bdbe9-111d-447d-9658-b77d217f93d8",
+   "metadata": {},
+   "source": [
+    "Now we know that the columns are:`token`, `year`, `frequency`, `pages` and `books`. Next, check the shape of our DataFrame"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "dc0a5d8c-47e0-4871-8cef-9c13464fde99",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:47:58.993999Z",
+     "iopub.status.busy": "2023-03-28T00:47:58.993345Z",
+     "iopub.status.idle": "2023-03-28T00:48:35.041903Z",
+     "shell.execute_reply": "2023-03-28T00:48:35.040603Z",
+     "shell.execute_reply.started": "2023-03-28T00:47:58.993961Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "82c8b6cb08d44b08abb8b54362ac4b4e",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The number of rows in the DataFrame is: 261823225\n",
+      "The DataFrame contains 5 columns"
+     ]
+    }
+   ],
+   "source": [
+    "#checking shape of our DataFrame\n",
+    "num_rows = data.count()\n",
+    "num_cols = len(data.columns)\n",
+    "\n",
+    "print(f\"The number of rows in the DataFrame is: {num_rows}\")\n",
+    "print(f\"The DataFrame contains {num_cols} columns\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f8b9d7c6-3cd2-45cf-8cdb-e90aef9398ca",
+   "metadata": {},
+   "source": [
+    "Our DataFrame contains a whopping 261,823,226 rows and 5 columns. Next, let's check the schema."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "78d31924-e0c2-4e48-a20e-beaceb0e20c0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:48:54.207192Z",
+     "iopub.status.busy": "2023-03-28T00:48:54.206857Z",
+     "iopub.status.idle": "2023-03-28T00:48:54.417492Z",
+     "shell.execute_reply": "2023-03-28T00:48:54.416603Z",
+     "shell.execute_reply.started": "2023-03-28T00:48:54.207163Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "8cc65983c6964d2caf65d70bde98de50",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "root\n",
+      " |-- token: string (nullable = true)\n",
+      " |-- year: string (nullable = true)\n",
+      " |-- frequency: string (nullable = true)\n",
+      " |-- pages: string (nullable = true)\n",
+      " |-- books: string (nullable = true)"
+     ]
+    }
+   ],
+   "source": [
+    "#checking schema of our DataFrame\n",
+    "data.printSchema()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f80bf539-bfa3-46aa-977c-7fab46b62225",
+   "metadata": {},
+   "source": [
+    "All of our categories are strings."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2446b310-7fc7-4153-b330-133ba0335c84",
+   "metadata": {},
+   "source": [
+    "## Spark SQL to filter the word \"data\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "694cd361-f58d-46ad-97c1-237096f7e003",
+   "metadata": {},
+   "source": [
+    "Now let's use SparkSQL to filter the DataFrame to only include the rows with the token \"data\" in them. First, we will need to use `CreateorReplaceTempView` function to register the data as a view in the Spark session."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "2986f8d6-1b80-464e-b76d-299364d0d5fb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T00:56:51.225875Z",
+     "iopub.status.busy": "2023-03-28T00:56:51.225548Z",
+     "iopub.status.idle": "2023-03-28T00:56:51.675291Z",
+     "shell.execute_reply": "2023-03-28T00:56:51.669660Z",
+     "shell.execute_reply.started": "2023-03-28T00:56:51.225846Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "6e2fd1ba4e8141bf8c1bc725a7115d47",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "#creating SQL view\n",
+    "\n",
+    "data.createOrReplaceTempView(\"eng_1M_1gram\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "19a72725-643d-4d32-9d78-9cdf69d79a01",
+   "metadata": {},
+   "source": [
+    "Now we can filter for only the rows that contain the word `data` in them."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "df2f7a96-3105-4366-97a6-f82f0928ee65",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:00:11.805075Z",
+     "iopub.status.busy": "2023-03-28T01:00:11.804475Z",
+     "iopub.status.idle": "2023-03-28T01:00:12.006820Z",
+     "shell.execute_reply": "2023-03-28T01:00:12.005701Z",
+     "shell.execute_reply.started": "2023-03-28T01:00:11.805032Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "f3af6f9e082344bbb0b87605138c6d80",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "#filtering for the rows that only contain the word `data`\n",
+    "\n",
+    "df_filtered = spark.sql(\"SELECT * FROM eng_1M_1gram WHERE token = 'data'\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a991cf36-7d7d-4e0e-aeda-898b14e84d7c",
+   "metadata": {},
+   "source": [
+    "Let's check the first 5 rows of our new DataFrame:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "da755820-271c-4497-8c36-5bf863faa4e5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:06:55.759368Z",
+     "iopub.status.busy": "2023-03-28T01:06:55.758983Z",
+     "iopub.status.idle": "2023-03-28T01:07:53.876348Z",
+     "shell.execute_reply": "2023-03-28T01:07:53.875300Z",
+     "shell.execute_reply.started": "2023-03-28T01:06:55.759337Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "f21e0aa21f7a4c4ea6be972ea7b663fe",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-----+----+---------+-----+-----+\n",
+      "|token|year|frequency|pages|books|\n",
+      "+-----+----+---------+-----+-----+\n",
+      "| data|1584|       16|   14|    1|\n",
+      "| data|1614|        3|    2|    1|\n",
+      "| data|1627|        1|    1|    1|\n",
+      "| data|1631|       22|   18|    1|\n",
+      "| data|1637|        1|    1|    1|\n",
+      "+-----+----+---------+-----+-----+\n",
+      "only showing top 5 rows"
+     ]
+    }
+   ],
+   "source": [
+    "#showing first 5 rows\n",
+    "df_filtered.show(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9b1cea06-1c42-4afc-af3c-1cf51b0dba6d",
+   "metadata": {},
+   "source": [
+    "Now, let's check the shape of our new DataFrame"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "7b79ef03-7517-40b6-8cc6-f47a4e018405",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:11:22.350937Z",
+     "iopub.status.busy": "2023-03-28T01:11:22.350603Z",
+     "iopub.status.idle": "2023-03-28T01:12:26.541263Z",
+     "shell.execute_reply": "2023-03-28T01:12:26.540276Z",
+     "shell.execute_reply.started": "2023-03-28T01:11:22.350908Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "2bd6048a8c2949718994ca62f55d190c",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The number of rows in the DataFrame is: 316\n",
+      "The DataFrame contains 5 columns"
+     ]
+    }
+   ],
+   "source": [
+    "# checking shape of our new DataFrame\n",
+    "\n",
+    "num_rows_filtered = df_filtered.count()\n",
+    "num_cols_filtered = len(df_filtered.columns)\n",
+    "\n",
+    "print(f\"The number of rows in the DataFrame is: {num_rows_filtered}\")\n",
+    "print(f\"The DataFrame contains {num_cols_filtered} columns\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8e9ce01-ec1b-4403-b5d3-69ebd5942082",
+   "metadata": {},
+   "source": [
+    "We now have 316 rows and we can go on and save this back to a HFDS directory."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "0a34c52c-36e9-49bf-8280-ea66ba81dbfc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:42:29.062521Z",
+     "iopub.status.busy": "2023-03-28T01:42:29.061914Z",
+     "iopub.status.idle": "2023-03-28T01:43:39.503794Z",
+     "shell.execute_reply": "2023-03-28T01:43:39.499852Z",
+     "shell.execute_reply.started": "2023-03-28T01:42:29.062486Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "d4e304678d1540e2923d3b906a679e58",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "#saving filtered DataFrame\n",
+    "\n",
+    "path = \"hdfs:///user/hadoop/ngrams_data/eng_1M_1gram_filtered.csv\"\n",
+    "df_filtered.write.csv(path, header = True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f050a609-c08e-4ce5-bc01-cbed8e9ed222",
+   "metadata": {},
+   "source": [
+    "Let's check what we have saved:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "0df277b9-4c17-452c-a130-c5cdcf8f9fb8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:46:58.577639Z",
+     "iopub.status.busy": "2023-03-28T01:46:58.577309Z",
+     "iopub.status.idle": "2023-03-28T01:47:08.200752Z",
+     "shell.execute_reply": "2023-03-28T01:47:08.199662Z",
+     "shell.execute_reply.started": "2023-03-28T01:46:58.577609Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "c9a3f918c27b4de79da5d13440b48b5e",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "#reading filtered data\n",
+    "df_filtered_written = spark.read.csv(\"/user/hadoop/eng_1M_1gram_filtered\", header=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "c22cb0e7-fe9e-4e0e-adcf-821017933c29",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-03-28T01:48:52.447519Z",
+     "iopub.status.busy": "2023-03-28T01:48:52.447176Z",
+     "iopub.status.idle": "2023-03-28T01:49:02.011774Z",
+     "shell.execute_reply": "2023-03-28T01:49:02.010605Z",
+     "shell.execute_reply.started": "2023-03-28T01:48:52.447478Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "a3189c87b6b544be961bac2029435ed5",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "VBox()"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "FloatProgress(value=0.0, bar_style='info', description='Progress:', layout=Layout(height='25px', width='50%'),…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-----+----+---------+-----+-----+\n",
+      "|token|year|frequency|pages|books|\n",
+      "+-----+----+---------+-----+-----+\n",
+      "| data|1584|       16|   14|    1|\n",
+      "| data|1614|        3|    2|    1|\n",
+      "| data|1627|        1|    1|    1|\n",
+      "| data|1631|       22|   18|    1|\n",
+      "| data|1637|        1|    1|    1|\n",
+      "+-----+----+---------+-----+-----+\n",
+      "only showing top 5 rows"
+     ]
+    }
+   ],
+   "source": [
+    "# Display the first few rows of the written DataFrame\n",
+    "df_filtered_written.show(5)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "PySpark",
+   "language": "",
+   "name": "pysparkkernel"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "python",
+    "version": 2
+   },
+   "mimetype": "text/x-python",
+   "name": "pyspark",
+   "pygments_lexer": "python2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
